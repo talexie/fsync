@@ -1,0 +1,34 @@
+config = {
+    # DHIS2 Confs
+    'dhis2_user': '',
+    'dhis2_passwd': '',
+    'orgunits_url': 'http://example.com/api/organisationUnits',
+    # sync_url is the service that creates/updates the facilities in mTrac
+    'sync_url': 'http://localhost:8080/create',
+    'sync_user': 'admin',  # username for accessing sync service
+    'sync_passwd': '',  # password for sync service
+
+    # DB Confs
+    'dbname': 'fsync',
+    'dbuser': 'postgres',
+    'dbpasswd': 'postgres',
+    'dbhost': 'localhost',
+    'dbport': '5432',
+    # mTrac DB
+    'mtrac_dbname': 'mtrack',
+    'mtrac_dbuser': '',
+    'mtrac_dbpasswd': '',
+    'mtrac_dbhost': 'localhost',
+    'mtrac_dbport': '5432',
+    # facility levels as in DHI2 instance
+    'hmis_033b_id': 'V1kJRs8CtW4',
+    'levels': {
+        'jTolsq2vJv8': 'HC II',
+        'GM7GlqjfGAW': 'HC III',
+        'luVzKLwlHJV': 'HC IV',
+        'm0DN21c3PrY': 'General Hospital',
+        'QEEIr51RGH8': 'NR Hospital',
+        '2zEq4xZRpOp': 'RR Hospital',
+        'YNsYaUOqAIs': 'Clinic',
+    }
+}
