@@ -89,7 +89,7 @@ if FORCE_SYNC:  # this is only used when you want to sync the contents alread id
         sync_params = {
             'username': config["sync_user"], 'password': config["sync_passwd"],
             'name': r["name"], 'uuid': r["uuid"],
-            'dhis2id': ["dhis2id"], 'ftype': r["level"], 'district': r["district"],
+            'dhis2id': r["dhis2id"], 'ftype': r["level"], 'district': r["district"],
             'subcounty': r["subcounty"], 'is_033b': r["is_033b"]
         }
         try:
