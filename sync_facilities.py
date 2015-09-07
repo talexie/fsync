@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 import psycopg2
 import psycopg2.extras
