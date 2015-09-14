@@ -173,6 +173,10 @@ class CreateFacility:
                             'uuid': params.uuid, 'type': type_id, 'district': params.district,
                             'active': True, 'deleted': False
                         })
+                    db2.query(
+                        "INSERT INTO healthmodels_fredfacilitydetail "
+                        "(uuid_id, h033b) VALUES ($uuid, $is_033b)",
+                        {'uuid': params.uuid, 'is_033b': params.is_033b})
                     if new:
                         facility_id = new[0]["id"]
                         d = db2.query(
@@ -213,6 +217,11 @@ class CreateFacility:
                         {
                             'name': params.name, 'dhis2id': params.dhis2id, 'type': type_id,
                             'district': params.district, 'facility': facility_id})
+                    db2.query(
+                        "UPDATE healthmodels_fredfacilitydetail SET "
+                        "h033b = $is_033b WHERE uuid_id = $uuid",
+                        {'is_033b': params.is_033b, 'uuid': params.uuid}
+                    )
                     d = db2.query(
                         "SELECT id FROM locations_location WHERE lower(name) = $name "
                         "AND level = 2", {'name': params.district.lower()})
