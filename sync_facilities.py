@@ -6,8 +6,13 @@ import requests
 import json
 import re
 import getopt
+import logging
 from settings import config
 
+logging.basicConfig(
+    format='%(asctime)s:%(levelname)s:%(message)s', filename='/tmp/sync_facilities.log',
+    datefmt='%Y-%m-%d %I:%M:%S', level=logging.DEBUG
+)
 cmd = sys.argv[1:]
 opts, args = getopt.getopt(
     cmd, 'c:u:l:af',
@@ -82,6 +87,7 @@ def get_facility_details(facilityJson):
     return parent, district, level, is_033b
 
 if FORCE_SYNC:  # this is only used when you want to sync the contents alread id sync db
+    logging.debug("START FULL SYNC for DB")
     cur.execute(
         "SELECT id, name, uuid, dhis2id, district, subcounty, level, is_033b "
         "FROM facilities WHERE level <> ''")
@@ -95,9 +101,10 @@ if FORCE_SYNC:  # this is only used when you want to sync the contents alread id
         }
         try:
             resp = get_url(config["sync_url"], sync_params)
-            print "Sync Service: %s" % resp
+            logging.debug("Syncing facility: %s" % r["uuid"])
         except:
-            print "Sync Service failed for:%s" % r["uuid"]
+            logging.error("E00: Sync Service failed for facility: %s" % r["uuid"])
+    logging.debug("END FULL SYNC for DB")
     sys.exit()
 
 if facility_id_list and url_list:  # this is for a list of ids
@@ -108,6 +115,7 @@ if facility_id_list and url_list:  # this is for a list of ids
             orgunit_dict = json.loads(response)
             orgunits.append(orgunit_dict)
         except:
+            logging.error("E01: Sync Service failed for multiple ids:")
             pass  # just keep quiet
 else:
     try:
@@ -115,8 +123,8 @@ else:
         orgunits_dict = json.loads(response)
         orgunits = orgunits_dict['organisationUnits']
     except:
-        pass  # just keep quiet for now
-
+        logging.error("E02: Sync Service failed")
+        # just keep quiet for now
 for orgunit in orgunits:
     subcounty, district, level, is_033b = get_facility_details(orgunit)
     cur.execute(
@@ -124,6 +132,7 @@ for orgunit in orgunits:
         "FROM facilities WHERE dhis2id = %s", [orgunit["id"]])
     res = cur.fetchone()
     if not res:  # we don't have an entry already
+        logging.debug("Sync Service: adding facility:%s to fsync" % orgunit["uuid"])
         cur.execute(
             "INSERT INTO facilities(name, dhis2id, uuid, district, subcounty, level, is_033b) "
             "VALUES (%s, %s, %s, %s, %s, %s, %s)",
@@ -140,7 +149,9 @@ for orgunit in orgunits:
             print "Sync Service: %s" % resp
         except:
             print "Sync Service failed for:%s" % orgunit["uuid"]
+            logging.error("E03: Sync Service failed for:%s" % orgunit["uuid"])
     else:  # we have the entry
+        logging.debug("Sync Service: updating facility:%s to fsync" % orgunit["uuid"])
         cur.execute(
             "UPDATE facilities SET name = %s, uuid = %s, "
             "district = %s, subcounty = %s, level = %s, is_033b = %s, "
@@ -159,9 +170,14 @@ for orgunit in orgunits:
                 }
                 try:
                     resp = get_url(config["sync_url"], sync_params)
+                    logging.debug("Sync Service: ")
                     print "Sync Service: %s" % resp
                 except:
                     print "Sync Service failed for:%s" % orgunit["uuid"]
+                    logging.error("E04: Sync Service failed for:%s" % orgunit["uuid"])
+        else:
+            print "Sync Service: Nothing changed for facility:[UUID: %s]" % orgunit["uuid"]
+
     conn.commit()
 
 conn.close()
