@@ -179,6 +179,10 @@ class CreateFacility:
                         {'uuid': params.uuid, 'is_033b': params.is_033b})
                     if new:
                         facility_id = new[0]["id"]
+                        db2.query(
+                            "INSERT INTO healthmodels_healthfacility"
+                            " (healthfacilitybase_ptr_id) VALUES($id)", {'id': facility_id}
+                        )
                         d = db2.query(
                             "SELECT id FROM locations_location WHERE lower(name) = $district "
                             "AND level = 2", {'district': params.district})
