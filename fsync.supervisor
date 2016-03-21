@@ -1,0 +1,9 @@
+[program:fsync-web]
+command = /var/www/env/prod/bin/python fsync_web.py 9292
+process_name = fsync
+directory = /var/www/prod/fsync/
+priority = 50
+redirect_stderr = true
+stdout_logfile= /var/log/fsync/fsync.log
+stopsignal = INT
+user = www-data

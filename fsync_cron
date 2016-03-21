@@ -1,0 +1,1 @@
+0 21 * * * /var/www/prod/fsync/sync_facilities.py -u `date --date="1 week ago" +"\%Y-\%m-\%d"`
