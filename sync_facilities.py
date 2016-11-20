@@ -136,7 +136,7 @@ for orgunit in orgunits:
         cur.execute(
             "INSERT INTO facilities(name, dhis2id, uuid, district, subcounty, level, is_033b) "
             "VALUES (%s, %s, %s, %s, %s, %s, %s)",
-            (orgunit["name"], orgunit["id"], orgunit["uuid"], subcounty, district, level, is_033b))
+            (orgunit["name"], orgunit["id"], orgunit["uuid"], district, subcounty, level, is_033b))
         # call service to create it in mTrac
         sync_params = {
             'username': config["sync_user"], 'password': config["sync_passwd"],
