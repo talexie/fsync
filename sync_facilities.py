@@ -22,7 +22,7 @@ SYNC_ALL = False
 FORCE_SYNC = False
 facility_id_list = ""
 # This the additional query string to DHIS2 orgunit URL
-query_string = "fields=id,uuid,name,parent[id,name,href],dataSets[id],organisationUnitGroups[id]"
+query_string = "fields=id,code,name,parent[id,name,href],dataSets[id],organisationUnitGroups[id]"
 
 for option, parameter in opts:
     if option == '-a':
@@ -132,7 +132,7 @@ for orgunit in orgunits:
         "FROM facilities WHERE dhis2id = %s", [orgunit["id"]])
     res = cur.fetchone()
     if not res:  # we don't have an entry already
-        logging.debug("Sync Service: adding facility:%s to fsync" % orgunit["uuid"])
+        logging.debug("Sync Service: adding facility:%s to fsync" % orgunit["id"])
         cur.execute(
             "INSERT INTO facilities(name, dhis2id, uuid, district, subcounty, level, is_033b) "
             "VALUES (%s, %s, %s, %s, %s, %s, %s)",
@@ -148,12 +148,12 @@ for orgunit in orgunits:
             resp = get_url(config["sync_url"], sync_params)
             print "Sync Service: %s" % resp
         except:
-            print "Sync Service failed for:%s" % orgunit["uuid"]
-            logging.error("E03: Sync Service failed for:%s" % orgunit["uuid"])
+            print "Sync Service failed for:%s" % orgunit["id"]
+            logging.error("E03: Sync Service failed for:%s" % orgunit["id"])
     else:  # we have the entry
-        logging.debug("Sync Service: updating facility:%s to fsync" % orgunit["uuid"])
+        logging.debug("Sync Service: updating facility:%s to fsync" % orgunit["id"])
         cur.execute(
-            "UPDATE facilities SET name = %s, uuid = %s, "
+            "UPDATE facilities SET name = %s, dhis2id = %s, "
             "district = %s, subcounty = %s, level = %s, is_033b = %s, "
             "ldate = NOW()"
             "WHERE dhis2id = %s",
@@ -161,10 +161,10 @@ for orgunit in orgunits:
         if (res["name"] != orgunit["name"]) or (res["level"] != level) or \
                 (res["is_033b"] != is_033b) or (res["district"] != district) or \
                 (res["subcounty"] != subcounty):
-                print "Worth Updating..........", res["uuid"]
+                print "Worth Updating..........", res["id"]
                 sync_params = {
                     'username': config["sync_user"], 'password': config["sync_passwd"],
-                    'name': orgunit["name"], 'uuid': orgunit["uuid"],
+                    'name': orgunit["name"], 'uuid': "",
                     'dhis2id': orgunit["id"], 'ftype': level, 'district': district,
                     'subcounty': subcounty, 'is_033b': is_033b
                 }
@@ -173,10 +173,10 @@ for orgunit in orgunits:
                     logging.debug("Sync Service: ")
                     print "Sync Service: %s" % resp
                 except:
-                    print "Sync Service failed for:%s" % orgunit["uuid"]
-                    logging.error("E04: Sync Service failed for:%s" % orgunit["uuid"])
+                    print "Sync Service failed for:%s" % orgunit["id"]
+                    logging.error("E04: Sync Service failed for:%s" % orgunit["id"])
         else:
-            print "Sync Service: Nothing changed for facility:[UUID: %s]" % orgunit["uuid"]
+            print "Sync Service: Nothing changed for facility:[UID: %s]" % orgunit["id"]
 
     conn.commit()
 

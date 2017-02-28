@@ -17,7 +17,7 @@ CREATE TABLE facilities(
     id SERIAL PRIMARY KEY NOT NULL,
     name TEXT NOT NULL DEFAULT '',
     dhis2id TEXT NOT NULL DEFAULT '',
-    uuid TEXT NOT NULL DEFAULT '',
+    uuid TEXT DEFAULT '',
     district TEXT NOT NULL DEFAULT '',
     is_033b BOOLEAN DEFAULT 'f',
     level TEXT NOT NULL DEFAULT '',
