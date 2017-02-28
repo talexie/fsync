@@ -22,7 +22,7 @@ SYNC_ALL = False
 FORCE_SYNC = False
 facility_id_list = ""
 # This the additional query string to DHIS2 orgunit URL
-query_string = "fields=id,code,name,parent[id,name,href],dataSets[id],organisationUnitGroups[id]"
+query_string = "fields=id,name,parent[id,name,href],dataSets[id],organisationUnitGroups[id]"
 
 for option, parameter in opts:
     if option == '-a':
